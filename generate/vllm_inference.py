@@ -75,11 +75,15 @@ pdb.set_trace()
 
 outputs = llm.generate(prompt_token_ids=prompts, sampling_params=sampling_params)
 
+generated_texts=[]
 for output in outputs:
     prompt = output.prompt
     generated_text = output.outputs[0].text
     print(f"Prompt: {prompt!r}, Generated text: {generated_text!r}")
-    
+    generated_texts.append(generated_text)
+
+with open(output_path,'w',encoding="utf-8") as o :
+    json.dump(generated_texts,o,ensure_ascii=False,indent=4)
     
 print("All dialogues have been generated and saved to ",output_path)
 
