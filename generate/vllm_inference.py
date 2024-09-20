@@ -4,10 +4,6 @@ import random
 import json
 from tqdm import tqdm
 
-
-
-
-
 def prompt_generate(random_data):
     
     prompt = """
@@ -32,17 +28,9 @@ def prompt_generate(random_data):
     return [{"role":"system","content":"You are Qwen, created by Alibaba Cloud. You are a helpful assistant."},{"role":"user","content":prompt}]
 
 
-model_path = "/mnt/rangehow/models/Qwen2.5-72B-Instruct"
+model_path = "/mnt/abu/models/Qwen2.5-72B-Instruct"
 example_path = "AR.json"
-output_path = "generated_dialogues_qwen2.5_500.json "
-
-
-
-
-
- 
-
-
+output_path = "generated_dialogues_qwen2.5_1000.json "
 
 # 读取JSON文件
 with open(example_path, 'r', encoding='utf-8') as f:
@@ -51,7 +39,7 @@ with open(example_path, 'r', encoding='utf-8') as f:
     
 prompts = []
 
-for i in tqdm(range(500), desc="Processing conversations"):
+for i in tqdm(range(1000), desc="Processing conversations"):
     random_data = random.sample(data, 3)
     prompt = prompt_generate(random_data)
     prompts.append(prompt)
@@ -63,7 +51,7 @@ for i,prompt in enumerate(prompts):
 print(max([len(p) for p in prompts]))
 
 
-sampling_params = SamplingParams(temperature=0.7, top_p=0.8, repetition_penalty=1.05, max_tokens=2048)
+sampling_params = SamplingParams(temperature=0.8, top_p=0.9, repetition_penalty=1.05, max_tokens=2048)
 llm = LLM(model=model_path,
               tensor_parallel_size=8,
               gpu_memory_utilization=0.9,  # 将GPU内存利用率
@@ -74,15 +62,29 @@ llm = LLM(model=model_path,
 
 outputs = llm.generate(prompt_token_ids=prompts, sampling_params=sampling_params)
 
-generated_texts=[]
+all_dialogues=[]
 for output in outputs:
     prompt = output.prompt
     generated_text = output.outputs[0].text
     print(f"Prompt: {prompt!r}, Generated text: {generated_text!r}")
-    generated_texts.append(generated_text)
 
-with open(output_path,'w',encoding="utf-8") as o :
-    json.dump(generated_texts,o,ensure_ascii=False,indent=4)
+    turns = generated_text.split('\n')
+    processed_dialogue = {"history": []}
+
+    for j in range(0, len(turns), 2):
+        if j+1 < len(turns):
+            human_turn = turns[j].replace("Human: ", "").strip()
+            assistant_turn = turns[j+1].replace("Assistant: ", "").strip()
+            processed_dialogue["history"].append({
+                    "human": human_turn,
+                    "assistant": assistant_turn
+                })
+
+    all_dialogues.append(processed_dialogue)
+
+with open(output_path, 'a', encoding='utf-8') as f:
+    json.dump(all_dialogues, f, ensure_ascii=False, indent=4)
+
     
 print("All dialogues have been generated and saved to ",output_path)
 
