@@ -70,8 +70,7 @@ llm = LLM(model=model_path,
               max_model_len=8192,
               
               )
-import pdb
-pdb.set_trace()
+
 
 outputs = llm.generate(prompt_token_ids=prompts, sampling_params=sampling_params)
 
