@@ -10,6 +10,7 @@
 
 ```bash
 python download_resources.py --output_dir=<数据保存目录> --resource_name=wiki_corpus
+unzip 数据目录/corpus.zip -d 数据目录
 ```
 
 参数说明：
