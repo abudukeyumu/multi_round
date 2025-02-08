@@ -26,13 +26,13 @@ class DragonRetriever(torch.nn.Module):
     def __init__(self, model_path, device):
         super().__init__()
         # 加载tokenizer和模型
-        # self.tokenizer = AutoTokenizer.from_pretrained(f"{model_path}-query-encoder")
-        # self.query_encoder = AutoModel.from_pretrained(f"{model_path}-query-encoder").to(device)
-        # self.context_encoder = AutoModel.from_pretrained(f"{model_path}-context-encoder").to(device)
-        self.tokenizer = AutoTokenizer.from_pretrained(f"{model_path}")
-        self.query_encoder = AutoModel.from_pretrained(f"{model_path}").to(device)
-        self.context_encoder = AutoModel.from_pretrained(f"{model_path}").to(device)
-        self.temperature = 1.0
+        self.tokenizer = AutoTokenizer.from_pretrained(f"{model_path}-query-encoder")
+        self.query_encoder = AutoModel.from_pretrained(f"{model_path}-query-encoder").to(device)
+        self.context_encoder = AutoModel.from_pretrained(f"{model_path}-context-encoder").to(device)
+        # self.tokenizer = AutoTokenizer.from_pretrained(f"{model_path}")
+        # self.query_encoder = AutoModel.from_pretrained(f"{model_path}").to(device)
+        # self.context_encoder = AutoModel.from_pretrained(f"{model_path}").to(device)
+        # self.temperature = 1.0
         
     def forward(self, questions_dict, contexts_dict):
         # 编码问题
